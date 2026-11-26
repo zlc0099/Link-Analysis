@@ -1,0 +1,74 @@
+{
+  "repo": "expressjs/express",
+  "htmlUrl": "https://github.com/expressjs/express",
+  "branch": "master",
+  "commit": {
+    "sha": "43fca52d28a422c8be48fd489cbd4f2d6152bab6",
+    "shortSha": "43fca52",
+    "date": "2026-11-02T20:15:26Z",
+    "message": "deps: body-parser@^2.4.0 (#7563)"
+  },
+  "analyzedAt": "2026-11-26T06:22:42.763Z",
+  "durationMs": 13304,
+  "ruleVersion": "rules-v1",
+  "score": {
+    "raw": 73,
+    "official": 73,
+    "capped": false,
+    "grade": "B",
+    "verdict": "小修后接入：按清单补齐 P1 项即可"
+  },
+  "dimensions": [
+    {
+      "dimension": "docs",
+      "label": "文档完备",
+      "score": 16,
+      "max": 20
+    },
+    {
+      "dimension": "deps",
+      "label": "依赖可复现",
+      "score": 14,
+      "max": 20
+    },
+    {
+      "dimension": "run",
+      "label": "启动清晰",
+      "score": 3,
+      "max": 20
+    },
+    {
+      "dimension": "portability",
+      "label": "跨平台友好",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "dimension": "security",
+      "label": "安全合规",
+      "score": 20,
+      "max": 20
+    }
+  ],
+  "coverage": {
+    "treeTruncated": false,
+    "eligibleFiles": 211,
+    "selectedFiles": 211,
+    "analyzedFiles": 211,
+    "failedFiles": [],
+    "skippedBinary": 0,
+    "skippedLarge": 0,
+    "bytesScanned": 724862
+  },
+  "severityCounts": {
+    "P1": 1,
+    "P2": 4,
+    "INFO": 4
+  },
+  "topFindings": [
+    {
+      "ruleId": "RUN-01",
+      "title": "未发现启动线索"
+    }
+  ]
+}

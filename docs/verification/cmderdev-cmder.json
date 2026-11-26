@@ -1,0 +1,69 @@
+{
+  "repo": "cmderdev/cmder",
+  "htmlUrl": "https://github.com/cmderdev/cmder",
+  "branch": "master",
+  "commit": {
+    "sha": "5655c5eb90a075b8bcdd8617bd331bd3dd96c5c2",
+    "shortSha": "5655c5e",
+    "date": "2026-11-10T02:49:04Z",
+    "message": "Merge pull request #3141 from cmderdev/docs/keep-unfinished-work-active"
+  },
+  "analyzedAt": "2026-11-26T06:23:09.885Z",
+  "durationMs": 12891,
+  "ruleVersion": "rules-v1",
+  "score": {
+    "raw": 85,
+    "official": 85,
+    "capped": false,
+    "grade": "A",
+    "verdict": "可直接接入：文档、依赖、启动与安全基线齐全"
+  },
+  "dimensions": [
+    {
+      "dimension": "docs",
+      "label": "文档完备",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "dimension": "deps",
+      "label": "依赖可复现",
+      "score": 14,
+      "max": 20
+    },
+    {
+      "dimension": "run",
+      "label": "启动清晰",
+      "score": 11,
+      "max": 20
+    },
+    {
+      "dimension": "portability",
+      "label": "跨平台友好",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "dimension": "security",
+      "label": "安全合规",
+      "score": 20,
+      "max": 20
+    }
+  ],
+  "coverage": {
+    "treeTruncated": false,
+    "eligibleFiles": 40,
+    "selectedFiles": 40,
+    "analyzedFiles": 40,
+    "failedFiles": [],
+    "skippedBinary": 35,
+    "skippedLarge": 0,
+    "bytesScanned": 380044
+  },
+  "severityCounts": {
+    "P2": 1,
+    "P3": 1,
+    "INFO": 38
+  },
+  "topFindings": []
+}

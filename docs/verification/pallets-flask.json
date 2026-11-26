@@ -1,0 +1,75 @@
+{
+  "repo": "pallets/flask",
+  "htmlUrl": "https://github.com/pallets/flask",
+  "branch": "main",
+  "commit": {
+    "sha": "49943b5a94413a530761350f04e896f76e8d620e",
+    "shortSha": "49943b5",
+    "date": "2026-10-30T15:05:20Z",
+    "message": "add `versionchanged` for ctx signature change (#6176)"
+  },
+  "analyzedAt": "2026-11-26T06:22:56.992Z",
+  "durationMs": 14226,
+  "ruleVersion": "rules-v1",
+  "score": {
+    "raw": 76,
+    "official": 76,
+    "capped": false,
+    "grade": "B",
+    "verdict": "小修后接入：按清单补齐 P1 项即可"
+  },
+  "dimensions": [
+    {
+      "dimension": "docs",
+      "label": "文档完备",
+      "score": 10,
+      "max": 20
+    },
+    {
+      "dimension": "deps",
+      "label": "依赖可复现",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "dimension": "run",
+      "label": "启动清晰",
+      "score": 6,
+      "max": 20
+    },
+    {
+      "dimension": "portability",
+      "label": "跨平台友好",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "dimension": "security",
+      "label": "安全合规",
+      "score": 20,
+      "max": 20
+    }
+  ],
+  "coverage": {
+    "treeTruncated": false,
+    "eligibleFiles": 224,
+    "selectedFiles": 224,
+    "analyzedFiles": 224,
+    "failedFiles": [],
+    "skippedBinary": 5,
+    "skippedLarge": 0,
+    "bytesScanned": 1157014
+  },
+  "severityCounts": {
+    "P1": 1,
+    "P2": 3,
+    "P3": 1,
+    "INFO": 6
+  },
+  "topFindings": [
+    {
+      "ruleId": "RUN-01",
+      "title": "未发现启动线索"
+    }
+  ]
+}
