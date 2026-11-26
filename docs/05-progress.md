@@ -126,6 +126,8 @@ dist/assets/index-*.js        120.75 kB │ gzip: 46.72 kB
 - mock 验证 P0 红线：`.env` 真实值 → 86 分封顶 39 / D，报告头与导出均标注「原始分 86 · 触发红线封顶」。
 - mock 验证 404（「不存在、已改名，或为非公开仓库」）与空仓库（「体检未完成 / 仓库为空」）。
 - 浏览器真实仓库 E2E（14:38）：`expressjs/express` 73/B，211/211 文件，commit `43fca52`，截图 `docs/screenshots/real-express.png`。
+- Token 流程：保存 → header 显示「Token 已配置」→ 刷新后仍持久化 → 清除后 localStorage 为空。
+- 取消流程：慢速 mock 下进入加载态 → 点击取消 → 回到首页且保留输入（`acme/slow`）。
 
 ### 5.5 已知验证缺口（诚实记录）
 
