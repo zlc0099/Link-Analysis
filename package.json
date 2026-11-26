@@ -5,6 +5,9 @@
   "description": "Git 仓库接入体检：输入公开 GitHub 仓库，输出可解释的五维接入就绪度报告",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
