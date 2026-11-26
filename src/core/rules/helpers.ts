@@ -15,6 +15,19 @@ export function treeByClass(ctx: RuleContext, cls: FileClass): string[] {
     .map((e) => e.path)
 }
 
+export function findReadmePath(ctx: RuleContext): string | undefined {
+  const paths = ctx.tree
+    .filter((e) => e.type === 'blob' && classifyPath(e.path) === 'readme')
+    .map((e) => e.path)
+    .sort((a, b) => {
+      const da = a.split('/').length
+      const db = b.split('/').length
+      if (da !== db) return da - db
+      return a < b ? -1 : 1
+    })
+  return paths[0]
+}
+
 export function findReadme(ctx: RuleContext): FileContent | undefined {
   const candidates = ctx.files.filter((f) => f.class === 'readme')
   if (!candidates.length) return undefined

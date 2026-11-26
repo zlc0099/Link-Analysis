@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { evaluateDocs } from '../../src/core/rules/docs'
-import { makeCtx, README_FULL } from '../fixtures/context'
+import { makeCtx, README_FULL, blob } from '../fixtures/context'
 
 function status(outcomes: ReturnType<typeof evaluateDocs>, ruleId: string) {
   return outcomes.find((o) => o.ruleId === ruleId)?.status
@@ -59,6 +59,14 @@ describe('DOC rules', () => {
   it('finds README under docs/', () => {
     const out = evaluateDocs(makeCtx({ 'docs/README.md': README_FULL }))
     expect(status(out, 'DOC-01')).toBe('pass')
+  })
+
+  it('keeps DOC-01 passing when README exists but its content failed to load', () => {
+    const out = evaluateDocs(makeCtx({ 'src/a.ts': 'x' }, [blob('README.md')]))
+    expect(status(out, 'DOC-01')).toBe('pass')
+    expect(status(out, 'DOC-02')).toBe('na')
+    expect(status(out, 'DOC-03')).toBe('na')
+    expect(status(out, 'DOC-04')).toBe('na')
   })
 
   it('attaches file and line evidence to failing findings', () => {

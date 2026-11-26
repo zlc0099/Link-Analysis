@@ -15,7 +15,7 @@ const examples = [
     repo: 'expressjs/express',
     lang: 'Node.js',
     tag: '后端框架',
-    desc: '老牌 Web 框架，文档、清单与锁文件齐全。',
+    desc: '老牌 Web 框架，适合观察启动线索与文档缺口。',
   },
   {
     repo: 'pallets/flask',
@@ -27,7 +27,7 @@ const examples = [
     repo: 'tiangolo/fastapi',
     lang: 'Python',
     tag: 'API 框架',
-    desc: '文档规范、CI 完整，可观察满分附近的报告形态。',
+    desc: '文档与 CI 较完整，适合对照规则明细。',
   },
 ]
 
@@ -65,6 +65,7 @@ function onSubmit(e: Event) {
         <p class="search-note muted small">支持完整链接、git@ 形式与 owner/repo 简写，仅限 GitHub 公开仓库。</p>
         <p v-if="error" class="alert" role="alert">
           <strong>{{ error.code === 'not-github' || error.code === 'invalid' || error.code === 'empty' ? '链接需要调整' : '体检未完成' }}</strong>
+          <!-- empty = 输入为空；repo-empty = 仓库为空，属于体检阶段问题 -->
           <span>{{ error.message }}</span>
         </p>
       </form>

@@ -100,7 +100,7 @@ async function requestJson<T>(
         signal: options.signal,
       })
       if (!res.ok) {
-        if (res.status >= 500 && attempt === 1) {
+        if (res.status >= 500 && attempt === 1 && retryOnNetwork) {
           await sleep(500)
           continue
         }

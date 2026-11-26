@@ -1,6 +1,6 @@
 import type { RuleContext, RuleOutcome } from './types'
 import { makeFinding, outcome } from './types'
-import { findReadme, headingCount, makePermalink, nonWhitespaceLength } from './helpers'
+import { findReadmePath, headingCount, makePermalink, nonWhitespaceLength } from './helpers'
 
 const INSTALL_WORDS = [
   'install', 'setup', 'build', 'requirements', '安装', '构建', '环境准备',
@@ -16,9 +16,9 @@ const CONFIG_WORDS = [
 const PLACEHOLDER = /your project|项目名称|项目简介|TODO:/i
 
 export function evaluateDocs(ctx: RuleContext): RuleOutcome[] {
-  const readme = findReadme(ctx)
+  const readmePath = findReadmePath(ctx)
 
-  if (!readme) {
+  if (!readmePath) {
     return [
       outcome('DOC-01', 'docs', false, [
         makeFinding('DOC-01', 'docs', 'P1', '缺少 README', {
@@ -27,6 +27,17 @@ export function evaluateDocs(ctx: RuleContext): RuleOutcome[] {
           suggestion: '在根目录补充 README.md，写明项目简介、安装、配置与启动步骤。',
         }),
       ]),
+      outcome('DOC-02', 'docs', 'na'),
+      outcome('DOC-03', 'docs', 'na'),
+      outcome('DOC-04', 'docs', 'na'),
+    ]
+  }
+
+  const readme = ctx.files.find((f) => f.path === readmePath)
+  if (!readme) {
+    // 文件存在但内容拉取失败：DOC-01 依据文件树判定，其余无法判断
+    return [
+      outcome('DOC-01', 'docs', true),
       outcome('DOC-02', 'docs', 'na'),
       outcome('DOC-03', 'docs', 'na'),
       outcome('DOC-04', 'docs', 'na'),

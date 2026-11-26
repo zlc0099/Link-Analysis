@@ -71,7 +71,7 @@ function messageOf(err: unknown): UiError {
               ? '请检查网络连接后重试。'
               : ''
     return {
-      code: err.code,
+      code: err.code === 'empty' ? 'repo-empty' : err.code,
       message: extra ? `${err.message}。${extra}` : err.message,
       resetAt: err.resetAt,
     }
