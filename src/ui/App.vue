@@ -29,6 +29,7 @@ const report = ref<Report | null>(null)
 const token = ref('')
 const tokenOpen = ref(false)
 const activeRepo = ref('')
+const linkNotice = ref<string | null>(null)
 
 let controller: AbortController | null = null
 
@@ -87,6 +88,9 @@ async function run(raw: string) {
     return
   }
   input.value = raw
+  linkNotice.value = parsed.normalized
+    ? '输入包含文件或目录路径，已按仓库根与默认分支分析。'
+    : null
   controller?.abort()
   controller = new AbortController()
   phase.value = 'loading'
@@ -130,6 +134,7 @@ function backHome() {
   phase.value = 'idle'
   report.value = null
   error.value = null
+  linkNotice.value = null
   progress.value = { stage: 'resolving-repo' }
   try {
     history.replaceState(null, '', location.pathname)
@@ -183,6 +188,7 @@ onMounted(() => {
       <ReportView
         v-else-if="phase === 'done' && report"
         :report="report"
+        :notice="linkNotice"
         @export="downloadMarkdown"
         @back="backHome"
         @rerun="run(activeRepo)"

@@ -6,7 +6,7 @@ import DimensionBars from '../components/DimensionBars.vue'
 import FindingList from '../components/FindingList.vue'
 import ScoreBreakdown from '../components/ScoreBreakdown.vue'
 
-const props = defineProps<{ report: Report }>()
+const props = defineProps<{ report: Report; notice?: string | null }>()
 const emit = defineEmits<{
   (e: 'export'): void
   (e: 'back'): void
@@ -64,6 +64,8 @@ const meta = computed(() => {
       </div>
       <span v-if="report.repo.archived" class="chip chip-p3 archived">已归档</span>
     </header>
+
+    <p v-if="notice" class="notice" role="status">{{ notice }}</p>
 
     <section v-if="incomplete" class="banner" role="status">
       <strong>数据不完整</strong>
@@ -211,6 +213,15 @@ const meta = computed(() => {
 
 .archived {
   flex: none;
+}
+
+.notice {
+  margin: 14px 0 0;
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-size: 13px;
 }
 
 .banner {

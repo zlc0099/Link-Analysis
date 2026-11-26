@@ -131,6 +131,12 @@ export async function analyzeRepo(owner: string, repo: string, options: AnalyzeO
   const limitations: string[] = []
   if (meta.archived) limitations.push('仓库已归档（archived），结论仅代表当前快照。')
   if (tokenFallback) limitations.push('配置的 Token 无效，已回退匿名请求（额度受限）。')
+  if (tree.entries.some((e) => e.type === 'commit')) {
+    limitations.push('仓库包含子模块，子模块内容未分析。')
+  }
+  if (selection.selected.length === 0) {
+    limitations.push('仓库没有可分析文件，报告为空结果。')
+  }
 
   emit({ stage: 'scoring' })
   const report = buildReport({

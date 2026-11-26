@@ -118,6 +118,26 @@ describe('analyzeRepo (integration)', () => {
     expect(report.limitations.join('\n')).toContain('回退匿名')
   })
 
+  it('notes that submodule contents were not analyzed', async () => {
+    const tree = {
+      truncated: false,
+      tree: [
+        { path: 'README.md', type: 'blob', size: 100, sha: 'r1' },
+        { path: 'assets/logo.png', type: 'blob', size: 100, sha: 'i1' },
+        { path: 'vendor/lib', type: 'commit', sha: 'sub' },
+      ],
+    }
+    const fetchFn = fakeFetch({
+      'https://api.github.com/repos/acme/demo': () => json(META),
+      'https://api.github.com/repos/acme/demo/commits/main': () =>
+        json({ sha: 'abcdef1234567890', commit: { message: 'init', author: { date: '' } } }),
+      'https://api.github.com/repos/acme/demo/git/trees/abcdef1234567890': () => json(tree),
+      'https://raw.githubusercontent.com/acme/demo/abcdef1234567890/README.md': () => new Response(README),
+    })
+    const report = await analyzeRepo('acme', 'demo', { fetchFn, now: () => '2026-11-26T00:00:00.000Z' })
+    expect(report.limitations.join('\n')).toContain('子模块')
+  })
+
   it('counts failed file fetches without aborting the report', async () => {
     const fetchFn = fakeFetch({
       'https://api.github.com/repos/acme/demo': () => json(META),

@@ -137,7 +137,6 @@ function envFindings(ctx: RuleContext): { scored: Finding[]; notices: Finding[] 
 function keyFindings(ctx: RuleContext): Finding[] {
   const findings: Finding[] = []
   for (const file of ctx.files) {
-    if (isPlaceholder(file.content)) continue
     for (const re of KEY_PATTERNS) {
       for (const hit of scanFile(file, re)) {
         if (isPlaceholder(hit.text)) continue

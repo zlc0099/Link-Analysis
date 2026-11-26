@@ -73,6 +73,14 @@ describe('SEC rules', () => {
     expect(f.evidence!.startsWith('sk-A')).toBe(true)
   })
 
+  it('still detects keys in files that merely mention the word test', () => {
+    const out = evaluateSecrets(
+      makeCtx({ 'src/app.ts': `// test helper for the key below\nconst key = "${FAKE_SK}"\n` }),
+    )
+    expect(status(out, 'SEC-03')).toBe('fail')
+    expect(findings(out, 'SEC-03')[0].severity).toBe('P0')
+  })
+
   it('flags keys in README as P1 without capping', () => {
     const out = evaluateSecrets(makeCtx({ 'README.md': `Use \`${FAKE_SK}\`\n` }))
     expect(findings(out, 'SEC-03')[0].severity).toBe('P1')

@@ -43,14 +43,19 @@ async function main() {
         },
       })
       const durationMs = Date.now() - started
-      const base = `${OUT_DIR}/${owner}-${repo}`
+      const complete =
+        report.coverage.failedFiles.length === 0 &&
+        report.coverage.analyzedFiles === report.coverage.selectedFiles
+      // 不完整的结果不覆盖已提交的完整记录，避免网络/限流导致记录退化
+      const base = complete ? `${OUT_DIR}/${owner}-${repo}` : `${OUT_DIR}/${owner}-${repo}.partial`
       await writeFile(`${base}.json`, JSON.stringify(summarize(report, durationMs), null, 2), 'utf8')
       await writeFile(`${base}.md`, buildMarkdown(report), 'utf8')
       console.log(
         `  ${report.repo.fullName} @ ${report.commit.shortSha} -> ${report.score.official}/${report.score.grade}` +
           ` (raw ${report.score.raw}${report.score.capped ? ', capped' : ''})` +
           ` files ${report.coverage.analyzedFiles}/${report.coverage.selectedFiles}` +
-          ` findings ${report.findings.length} in ${(durationMs / 1000).toFixed(1)}s`,
+          ` findings ${report.findings.length} in ${(durationMs / 1000).toFixed(1)}s` +
+          `${complete ? '' : ' [PARTIAL, not overwriting records]'}`,
       )
     } catch (err) {
       console.error(`  FAILED: ${(err as Error).message}`)
