@@ -124,6 +124,6 @@ tbody tr:last-child td {
 }
 
 tr.missed td {
-  background: #fffbfa;
+  background: var(--missed-bg);
 }
 </style>

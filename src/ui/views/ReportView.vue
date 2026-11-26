@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Report } from '../../core/report/schema'
-import ScoreRing from '../components/ScoreRing.vue'
+import ScoreSummary from '../components/ScoreSummary.vue'
 import DimensionBars from '../components/DimensionBars.vue'
 import FindingList from '../components/FindingList.vue'
 import ScoreBreakdown from '../components/ScoreBreakdown.vue'
@@ -26,11 +26,14 @@ const incomplete = computed(
   () => report.value.coverage.treeTruncated || report.value.coverage.failedFiles.length > 0,
 )
 
-const analyzedAt = computed(() => {
-  const d = new Date(report.value.analyzedAt)
-  if (Number.isNaN(d.getTime())) return report.value.analyzedAt
+function fmtTime(value: string): string {
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return value
   return d.toLocaleString('zh-CN', { hour12: false })
-})
+}
+
+const analyzedAt = computed(() => fmtTime(report.value.analyzedAt))
+const commitDate = computed(() => fmtTime(report.value.commit.date))
 
 const meta = computed(() => {
   const r = report.value.repo
@@ -49,22 +52,6 @@ const meta = computed(() => {
       </div>
     </div>
 
-    <header class="repo card">
-      <div class="repo-main">
-        <h1>
-          <a :href="report.repo.htmlUrl" target="_blank" rel="noopener noreferrer">{{ report.repo.fullName }}</a>
-        </h1>
-        <p v-if="report.repo.description" class="desc">{{ report.repo.description }}</p>
-        <p class="meta mono">
-          {{ report.repo.defaultBranch }} @ {{ report.commit.shortSha }} · 分析于 {{ analyzedAt }}
-        </p>
-        <p class="meta muted">
-          {{ meta }} · commit {{ report.commit.message || '（无提交信息）' }}
-        </p>
-      </div>
-      <span v-if="report.repo.archived" class="chip chip-p3 archived">已归档</span>
-    </header>
-
     <p v-if="notice" class="notice" role="status">{{ notice }}</p>
 
     <section v-if="incomplete" class="banner" role="status">
@@ -79,16 +66,35 @@ const meta = computed(() => {
       </span>
     </section>
 
+    <section class="repo">
+      <div class="repo-title">
+        <h1>
+          <a :href="report.repo.htmlUrl" target="_blank" rel="noopener noreferrer">{{ report.repo.fullName }}</a>
+        </h1>
+        <span v-if="report.repo.archived" class="chip chip-p3">已归档</span>
+      </div>
+      <p v-if="report.repo.description" class="desc">{{ report.repo.description }}</p>
+      <dl class="repo-meta">
+        <div><dt>默认分支</dt><dd class="mono">{{ report.repo.defaultBranch }} @ {{ report.commit.shortSha }}</dd></div>
+        <div><dt>最近提交</dt><dd class="mono">{{ commitDate }}</dd></div>
+        <div><dt>分析时间</dt><dd>{{ analyzedAt }}</dd></div>
+        <div><dt>仓库信息</dt><dd>{{ meta }}</dd></div>
+      </dl>
+      <p class="commit muted small mono">commit {{ report.commit.message || '（无提交信息）' }}</p>
+    </section>
+
     <section class="score card">
-      <ScoreRing
-        :score="report.score.official"
-        :raw="report.score.raw"
-        :grade="report.score.grade"
-        :capped="report.score.capped"
-      />
+      <div class="score-left">
+        <ScoreSummary
+          :score="report.score.official"
+          :raw="report.score.raw"
+          :grade="report.score.grade"
+          :capped="report.score.capped"
+        />
+        <p class="verdict">{{ report.score.verdict }}</p>
+      </div>
       <div class="score-right">
         <DimensionBars :dimensions="report.dimensions" />
-        <p class="verdict">{{ report.score.verdict }}</p>
         <p class="coverage mono small">
           覆盖：{{ report.coverage.analyzedFiles }} / {{ report.coverage.selectedFiles }}（候选
           {{ report.coverage.eligibleFiles }}） · 跳过二进制 {{ report.coverage.skippedBinary }} ·
@@ -97,16 +103,16 @@ const meta = computed(() => {
       </div>
     </section>
 
-    <section class="block card">
-      <div class="block-head">
+    <section class="section">
+      <div class="section-head">
         <h2>主要风险</h2>
         <span class="muted small">P0 红线 / P1 高</span>
       </div>
       <FindingList :findings="major" empty="未发现 P0 / P1 风险。" />
     </section>
 
-    <section v-if="minor.length" class="block card">
-      <div class="block-head">
+    <section v-if="minor.length" class="section">
+      <div class="section-head">
         <h2>次要问题</h2>
         <span class="muted small">P2 中 / P3 低</span>
       </div>
@@ -118,40 +124,35 @@ const meta = computed(() => {
       </details>
     </section>
 
-    <section class="block card">
-      <div class="block-head">
-        <h2>评分明细</h2>
-        <span class="muted small">每条失分可回溯到规则 ID</span>
+    <section class="section">
+      <div class="section-head">
+        <h2>系统兼容性</h2>
+        <span class="muted small">脚本仅提示，路径计分</span>
       </div>
-      <ScoreBreakdown :dimensions="report.dimensions" />
-    </section>
-
-    <section class="block card">
-      <div class="block-head">
-        <h2>Windows 专用脚本</h2>
-        <span class="chip chip-info">信息项，不计分</span>
-      </div>
+      <h3 class="sub">Windows 专用脚本 <span class="chip chip-info">信息项，不计分</span></h3>
       <FindingList :findings="windows" empty="未发现 .bat / .cmd / .ps1 / .vbs 脚本。" />
-    </section>
-
-    <section class="block card">
-      <div class="block-head">
-        <h2>硬编码路径</h2>
-        <span class="muted small">源码 / 配置计分，文档与脚本仅提示</span>
-      </div>
+      <h3 class="sub">硬编码路径</h3>
       <FindingList :findings="pathFindings" empty="未发现盘符、用户目录、file:// 或 UNC 路径。" />
     </section>
 
-    <section class="block card">
-      <div class="block-head">
-        <h2>密钥与敏感信息</h2>
+    <section class="section">
+      <div class="section-head">
+        <h2>安全风险</h2>
         <span class="muted small">全部脱敏，不提供完整值</span>
       </div>
       <FindingList :findings="secretFindings" empty="未发现私钥、.env、密钥或凭证文件。" />
     </section>
 
-    <section class="block card">
-      <div class="block-head">
+    <section class="section">
+      <div class="section-head">
+        <h2>检查明细</h2>
+        <span class="muted small">每条失分可回溯到规则 ID</span>
+      </div>
+      <ScoreBreakdown :dimensions="report.dimensions" />
+    </section>
+
+    <section class="section">
+      <div class="section-head">
         <h2>已知限制</h2>
       </div>
       <ul class="limits">
@@ -168,7 +169,7 @@ const meta = computed(() => {
 
 <style scoped>
 .report {
-  padding-top: 24px;
+  padding-top: 20px;
 }
 
 .toolbar {
@@ -176,48 +177,17 @@ const meta = computed(() => {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .toolbar-actions {
   display: flex;
-  gap: 10px;
-}
-
-.repo {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px 22px;
-}
-
-.repo-main h1 {
-  margin: 0;
-  font-size: 22px;
-  letter-spacing: -0.01em;
-  font-family: var(--mono);
-}
-
-.desc {
-  margin: 6px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.meta {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: var(--ink-soft);
-}
-
-.archived {
-  flex: none;
+  gap: 8px;
 }
 
 .notice {
-  margin: 14px 0 0;
-  padding: 9px 14px;
+  margin: 0 0 14px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   background: var(--accent-soft);
   color: var(--accent-dark);
@@ -228,27 +198,85 @@ const meta = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  margin-top: 14px;
-  padding: 12px 16px;
-  border: 1px solid #f0d9b5;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--banner-line);
   border-left: 4px solid var(--p1);
   background: var(--p1-soft);
   border-radius: var(--radius-sm);
   font-size: 13px;
-  color: var(--ink-soft);
 }
 
 .banner strong {
   color: var(--p1);
 }
 
+.repo {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.repo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.repo-title h1 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.35;
+  font-family: var(--mono);
+  font-weight: 600;
+}
+
+.desc {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.repo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 32px;
+  margin: 12px 0 0;
+}
+
+.repo-meta dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.repo-meta dd {
+  margin: 0;
+  font-size: 13px;
+}
+
+.commit {
+  margin: 10px 0 0;
+}
+
 .score {
   display: grid;
-  grid-template-columns: 210px 1fr;
+  grid-template-columns: 240px 1fr;
   gap: 24px;
-  align-items: center;
-  margin-top: 16px;
+  align-items: start;
+  margin-top: 24px;
   padding: 24px;
+}
+
+.score-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.verdict {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-soft);
 }
 
 .score-right {
@@ -257,48 +285,53 @@ const meta = computed(() => {
   gap: 12px;
 }
 
-.verdict {
-  margin: 4px 0 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  font-size: 14px;
-  color: var(--ink-soft);
-}
-
 .coverage {
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
 }
 
-.block {
-  margin-top: 16px;
-  padding: 22px;
+.section {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 
-.block-head {
+.section-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
-.block-head h2 {
+.section-head h2 {
   margin: 0;
-  font-size: 17px;
-  letter-spacing: -0.01em;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sub .chip {
+  font-weight: 500;
 }
 
 .fold summary {
   cursor: pointer;
   font-size: 13px;
   color: var(--accent);
-  padding: 4px 0;
+  padding: 2px 0;
 }
 
 .fold-body {
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .limits {
@@ -309,20 +342,19 @@ const meta = computed(() => {
 }
 
 .limits li + li {
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .bottom-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin: 26px 0 10px;
+  gap: 8px;
+  margin: 28px 0 10px;
 }
 
 @media (max-width: 860px) {
   .score {
     grid-template-columns: 1fr;
-    justify-items: center;
   }
   .score-right {
     width: 100%;
@@ -331,16 +363,13 @@ const meta = computed(() => {
 
 @media (max-width: 640px) {
   .toolbar,
-  .repo {
+  .toolbar-actions,
+  .bottom-actions {
     flex-direction: column;
     align-items: stretch;
   }
-  .toolbar-actions {
-    justify-content: flex-end;
-  }
-  .toolbar-actions .btn,
-  .bottom-actions .btn {
-    flex: 1;
+  .bottom-actions {
+    justify-content: stretch;
   }
 }
 </style>

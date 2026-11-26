@@ -17,28 +17,30 @@ function chipClass(sev: string): string {
 
 <template>
   <div v-if="findings.length" class="list">
-    <article v-for="f in findings" :key="f.id" class="finding">
-      <header class="head">
+    <details v-for="f in findings" :key="f.id" class="finding" :class="'sev-' + f.severity">
+      <summary class="head">
         <span :class="chipClass(f.severity)">{{ SEV_LABEL[f.severity] ?? f.severity }}</span>
-        <h3>{{ f.title }}</h3>
+        <span class="title">{{ f.title }}</span>
         <span class="rule mono">{{ f.ruleId }}</span>
-      </header>
-      <p class="loc small">
-        <template v-if="f.file">
-          <a v-if="f.permalink" :href="f.permalink" target="_blank" rel="noopener noreferrer" class="mono">
-            {{ f.file }}{{ f.line ? ':' + f.line : '' }}
-          </a>
-          <span v-else class="mono">{{ f.file }}{{ f.line ? ':' + f.line : '' }}</span>
-        </template>
-        <span v-else class="muted">仓库级</span>
-        <span class="conf">{{ CONF_LABEL[f.confidence] ?? '' }}</span>
-      </p>
-      <code v-if="f.evidence" class="evidence mono">{{ f.evidence }}</code>
-      <div class="notes">
-        <p v-if="f.impact"><b>影响</b>{{ f.impact }}</p>
-        <p v-if="f.suggestion"><b>建议</b>{{ f.suggestion }}</p>
+      </summary>
+      <div class="body">
+        <p class="loc small">
+          <template v-if="f.file">
+            <a v-if="f.permalink" :href="f.permalink" target="_blank" rel="noopener noreferrer" class="mono">
+              {{ f.file }}{{ f.line ? ':' + f.line : '' }}
+            </a>
+            <span v-else class="mono">{{ f.file }}{{ f.line ? ':' + f.line : '' }}</span>
+          </template>
+          <span v-else class="muted">仓库级</span>
+          <span class="conf">{{ CONF_LABEL[f.confidence] ?? '' }}</span>
+        </p>
+        <code v-if="f.evidence" class="evidence mono">{{ f.evidence }}</code>
+        <div class="notes">
+          <p v-if="f.impact"><b>影响</b>{{ f.impact }}</p>
+          <p v-if="f.suggestion"><b>建议</b>{{ f.suggestion }}</p>
+        </div>
       </div>
-    </article>
+    </details>
   </div>
   <p v-else class="empty muted small">{{ empty ?? '没有需要展示的条目。' }}</p>
 </template>
@@ -47,27 +49,60 @@ function chipClass(sev: string): string {
 .list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .finding {
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+
+.finding:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.finding.sev-P0 {
+  border-left: 3px solid var(--p0-bright);
+}
+
+.finding.sev-P1 {
+  border-left: 3px solid var(--p1-bright);
+}
+
+.finding.sev-INFO {
+  border-left: 3px solid var(--line-strong);
 }
 
 .head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
+  padding: 9px 10px;
+  cursor: pointer;
+  list-style: none;
 }
 
-h3 {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
+.head::-webkit-details-marker {
+  display: none;
+}
+
+.head::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 4px solid var(--muted);
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  flex: none;
+  transition: transform 0.12s ease;
+}
+
+.finding[open] .head::before {
+  transform: rotate(90deg);
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.45;
 }
 
@@ -77,11 +112,15 @@ h3 {
   color: var(--muted);
 }
 
+.body {
+  padding: 0 10px 12px 30px;
+}
+
 .loc {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 6px 0 0;
+  margin: 0;
   flex-wrap: wrap;
 }
 
@@ -96,9 +135,9 @@ h3 {
 
 .evidence {
   display: block;
-  margin-top: 8px;
-  padding: 7px 10px;
-  border-radius: 6px;
+  margin-top: 6px;
+  padding: 6px 9px;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
   border: 1px solid var(--line);
   font-size: 12px;
@@ -110,7 +149,7 @@ h3 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px 18px;
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 12.5px;
   color: var(--muted);
 }
@@ -122,7 +161,7 @@ h3 {
 .notes b {
   margin-right: 6px;
   color: var(--ink-soft);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .empty {

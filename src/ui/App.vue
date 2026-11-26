@@ -20,6 +20,7 @@ interface UiError {
 }
 
 const TOKEN_KEY = 'link-analysis.token'
+const THEME_KEY = 'link-analysis.theme'
 
 const phase = ref<Phase>('idle')
 const input = ref('')
@@ -30,10 +31,26 @@ const token = ref('')
 const tokenOpen = ref(false)
 const activeRepo = ref('')
 const linkNotice = ref<string | null>(null)
+const dark = ref(false)
 
 let controller: AbortController | null = null
 
 const hasToken = computed(() => token.value.length > 0)
+
+function applyTheme(isDark: boolean) {
+  dark.value = isDark
+  if (isDark) document.documentElement.dataset.theme = 'dark'
+  else delete document.documentElement.dataset.theme
+  try {
+    localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light')
+  } catch {
+    /* 隐私模式下仅本次会话可用 */
+  }
+}
+
+function toggleTheme() {
+  applyTheme(!dark.value)
+}
 
 function readToken(): string {
   try {
@@ -159,6 +176,7 @@ function downloadMarkdown() {
 
 onMounted(() => {
   token.value = readToken()
+  dark.value = document.documentElement.dataset.theme === 'dark'
   const repo = new URLSearchParams(location.search).get('repo')
   if (repo) {
     input.value = repo
@@ -169,7 +187,12 @@ onMounted(() => {
 
 <template>
   <div class="app">
-    <TopBar :has-token="hasToken" @toggle-token="tokenOpen = !tokenOpen" />
+    <TopBar
+      :has-token="hasToken"
+      :dark="dark"
+      @toggle-token="tokenOpen = !tokenOpen"
+      @toggle-theme="toggleTheme"
+    />
     <TokenPanel
       v-if="tokenOpen"
       :token="token"

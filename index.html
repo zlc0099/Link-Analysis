@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Link-Analysis：给一个公开 GitHub 仓库，做一次接入体检。" />
     <title>Link-Analysis · Git 仓库接入体检</title>
+    <script>
+      ;(function () {
+        try {
+          var saved = localStorage.getItem('link-analysis.theme')
+          var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+          if (dark) document.documentElement.dataset.theme = 'dark'
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>

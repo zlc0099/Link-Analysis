@@ -77,7 +77,7 @@ function stateOf(index: number): 'done' | 'current' | 'pending' {
 }
 
 .panel {
-  padding: 28px 30px;
+  padding: 22px 24px;
 }
 
 .repo {

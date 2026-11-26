@@ -50,6 +50,11 @@ function save() {
         </div>
         <p class="muted small hint">
           建议使用 fine-grained token，仅授予公开仓库只读权限。
+          <a
+            href="https://github.com/settings/personal-access-tokens/new"
+            target="_blank"
+            rel="noopener noreferrer"
+          >前往 GitHub 创建 Token ↗</a>
         </p>
       </div>
     </div>
@@ -106,7 +111,7 @@ input {
 input:focus {
   border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  box-shadow: inset 0 -2px 0 0 var(--accent);
 }
 
 .hint {
