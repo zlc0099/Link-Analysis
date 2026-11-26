@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const REPO_URL = 'https://github.com/zlc0099/Link-Analysis'
+const DEMO_URL = 'https://zlc0099.github.io/Link-Analysis/'
 
 const points = [
   { title: '只读静态扫描', desc: '只拉取公开仓库的文件内容做本地分析，不执行代码、不安装依赖、不修改任何文件。' },
@@ -51,6 +52,9 @@ const stack = [
       <div class="col">
         <h3>项目主页</h3>
         <ul>
+          <li>
+            <a :href="DEMO_URL" target="_blank" rel="noopener noreferrer">zlc0099.github.io/Link-Analysis ↗（在线演示）</a>
+          </li>
           <li>
             <a :href="REPO_URL" target="_blank" rel="noopener noreferrer">github.com/zlc0099/Link-Analysis ↗</a>
           </li>

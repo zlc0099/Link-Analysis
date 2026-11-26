@@ -2,6 +2,8 @@
 
 输入一个公开 GitHub 仓库链接，在浏览器内完成静态体检，输出「新人能否顺利接手、坑在哪」的可解释报告。
 
+**在线使用：[https://zlc0099.github.io/Link-Analysis/](https://zlc0099.github.io/Link-Analysis/)**
+
 - 五个维度：文档、依赖、启动、跨平台、安全，各 20 分
 - 每条失分可回溯到规则 ID、文件:行与 commit 固定链接
 - 密钥证据全程脱敏；不执行代码、不安装依赖、不上传仓库内容
@@ -15,8 +17,8 @@
 
 ## 在线演示
 
+- 正式地址：**https://zlc0099.github.io/Link-Analysis/**（由 `.github/workflows/deploy.yml` 在每次推送到 `master`/`main` 后自动构建发布）
 - 仓库地址：https://github.com/zlc0099/Link-Analysis
-- GitHub Pages：推送后由 `.github/workflows/deploy.yml` 自动构建发布；需在仓库 **Settings → Pages → Source 选择「GitHub Actions」** 后生效，之后访问 `https://zlc0099.github.io/Link-Analysis/`。
 - 本地运行：见下方「快速开始」。
 
 ## 快速开始
