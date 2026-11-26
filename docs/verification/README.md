@@ -18,4 +18,5 @@ npm run verify:repos
 
 - 记录只在 `analyzed === selected` 且无失败文件时写入正式文件；网络或限流导致的不完整结果写到 `.partial.*`，不会覆盖完整记录。
 - 浏览器侧对 `expressjs/express` 另做过一次真实 E2E（211/211、73/B），截图见 `docs/screenshots/real-express.png`。
+- 记录生成后曾修正「密钥扫描按整文件内容跳过」的漏报；该修正只会增加检出、不会减少。Express 已在最终代码上通过浏览器 E2E 复核，结果一致（73/B）；Flask 与 cmder 未在最终代码上复跑。
 - 规则版本 `rules-v1`；分析时间为 UTC，页面会转成本地时间展示。
