@@ -132,6 +132,6 @@
 
 ## 7. 诚实边界
 
-- 浏览器侧真实仓库 E2E 在开发时段遇到共享 IP 的匿名额度耗尽（`403`）；同一流水线改用 Node 侧 `scripts/verify-real.ts` 完成 3 个真实仓库验证，UI 用本地 mock 路由覆盖完整状态。此边界如实记录，不将 mock 数据表述为真实仓库结果。
+- 浏览器侧真实仓库 E2E 在开发时段先遇到共享 IP 的匿名额度耗尽（`403`），额度重置后补测 `expressjs/express`：211/211 文件、73/B、commit `43fca52`（截图 `docs/screenshots/real-express.png`）。另外两个仓库的完整记录由同一个 `analyzeRepo` 流水线在 Node 侧生成，未在浏览器中复跑。UI 的 P0/404/空仓库等状态由本地 mock 路由验证；不将 mock 数据表述为真实仓库结果。
 - GitHub Pages 尚未发布；`README` 中未填写虚构的演示地址。
 - 缓存、增量重扫、差异视图等设计能力明确标注为「未实现」。
