@@ -7,14 +7,16 @@
 - 密钥证据全程脱敏；不执行代码、不安装依赖、不上传仓库内容
 - 可导出 Markdown 整改清单
 
-> 界面预览（本地演示数据，不是真实仓库结果）：  
+> 界面预览：  
 > ![首页](docs/screenshots/home.png)  
 > ![报告页](docs/screenshots/report.png)  
-> ![P0 红线封顶](docs/screenshots/redline.png)
+> ![检测规则](docs/screenshots/rules.png)  
+> ![AI 接入建议](docs/screenshots/ai-advice.png)
 
 ## 在线演示
 
-- 正式地址：待发布。GitHub Pages 工作流已就绪（`.github/workflows/deploy.yml`），需要先确认 GitHub 账号与仓库地址（待确认项 P-01）。
+- 仓库地址：https://github.com/zlc0099/Link-Analysis
+- GitHub Pages：推送后由 `.github/workflows/deploy.yml` 自动构建发布；需在仓库 **Settings → Pages → Source 选择「GitHub Actions」** 后生效，之后访问 `https://zlc0099.github.io/Link-Analysis/`。
 - 本地运行：见下方「快速开始」。
 
 ## 快速开始
@@ -43,6 +45,8 @@ expressjs/express
 也支持 `?repo=owner/name` 直接打开报告（分享链接）。
 
 匿名访问每小时 60 次 GitHub API 请求；可在右上角配置只读 Token 提升到 5000 次。Token 只保存在本机 `localStorage`，仅发送到 `api.github.com`。
+
+报告页底部提供可选的「AI 接入建议」：配置自己的 AI 服务 Key 后一键生成修复建议，不配置时可「复制 Prompt」粘贴到任意 AI 对话框。评分始终由规则引擎决定，AI 输出仅作建议并全程标注。
 
 ## 评分口径
 
@@ -134,21 +138,21 @@ Git 是内容寻址的，文件树里每个文件都有 blob SHA：
 
 ## 测试与质量
 
-- 单元测试 138 例：URL 解析 13、分类/筛选 21、五类规则 64、评分 13、导出 7、GitHub client 13、报告/流水线 7；覆盖全部规则 ID 正反例与评分边界（100 / 76 / 红线 39）。
+- 单元测试 153 例：URL 解析 13、分类/筛选 21、五类规则 64、评分 13、导出 7、GitHub client 13、报告/流水线 7、AI Prompt 5、AI 客户端 10；覆盖全部规则 ID 正反例与评分边界（100 / 76 / 红线 39）。
 - 对照验收：1440 / 768 / 390 三档无横向滚动；控制台无 JS 报错；导出文件已验证包含 repo / branch / sha / 时间 / 覆盖率 / 脱敏证据。
 - 状态覆盖：mock 路由验证 P0 封顶（原始 86 → 39/D，「原始分 86 · 触发红线封顶」）、404、空仓库、文件读取失败横幅；真实请求触发过限流错误态。
-- 构建产物：JS 46.7KB gzip + CSS 3.8KB gzip（远低于 250KB 目标）。
-- 浏览器真实仓库 E2E：`expressjs/express` 在 1440 宽度下完成 211/211 文件分析，73/B，commit `43fca52`；截图 `docs/screenshots/real-express.png`。
+- 浏览器真实仓库 E2E：`pallets/flask` 完整分析截图见 `docs/screenshots/report.png`，AI 建议实测见 `docs/screenshots/ai-advice.png`。
 - 3 个真实仓库的完整记录由 Node 侧同一流水线生成；P0/404/空仓库/截断等状态用本地 mock 路由验证。边界说明见 `AI_USAGE.md`。
 
 ## 自检
 
-用本工具分析 Link-Analysis 自身：待 GitHub 仓库创建并公开后执行（P-01），结果将补入本节。
+用本工具分析 Link-Analysis 自身：访问 `?repo=zlc0099/Link-Analysis` 即可，结果不预写入本节（报告始终实时生成）。
 
 ## 隐私与安全
 
 - 无后端、无数据库、无统计脚本；数据只在浏览器与 GitHub 之间流动。
-- Token 仅存 `localStorage`、仅发往 `api.github.com`；不写入 URL、日志、报告或导出文件。
+- GitHub Token 仅存 `localStorage`、仅发往 `api.github.com`；不写入 URL、日志、报告或导出文件。
+- AI 服务 Key 仅存本机 `localStorage`、仅发往用户自行配置的 AI 服务；界面中以掩码显示，不进入报告与导出。进入 AI Prompt 的证据先经规则层脱敏，再做一道模式级二次脱敏（`sk-`/`ghp_`/`AKID` 等前缀与高熵长串）。
 - 密钥证据在进入报告数据模型前脱敏；DOM 与导出中不存在完整值，也不提供复制入口。
 - 测试中的密钥字面量运行时拼接；仓库不含真实密钥。
 
@@ -163,6 +167,7 @@ src/core/
   rules/     文档 / 依赖 / 启动 / 跨平台 / 安全 / Windows 脚本
   score/     分项定义、聚合、P0 封顶、等级
   report/    报告模型、脱敏、Markdown 导出
+  ai/        AI 接入建议（Prompt 构建、客户端、缓存；评分不经 AI）
   analyze.ts 完整流水线（可注入 fetch / AbortSignal / 进度回调）
 src/ui/      首页、进度、报告页与组件
 tests/       单元测试与内存 fixture
@@ -181,9 +186,8 @@ docs/        设计文档、进度跟踪、验证记录、截图
 
 ## 未实现（明确标注）
 
-- AI 评分 / 接入建议：接口占位，UI 无入口，评分完全由规则引擎决定。
-- 报告缓存、最近体检、增量重扫、差异视图、ETag：设计见技术文档 §9，v1 未实现。
-- GitHub Pages 线上地址：工作流已就绪，等待仓库确认后发布（P-01）。
+- 报告缓存、最近体检、增量重扫、差异视图、ETag：设计见上文「更新跟踪设计」，v1 未实现。
+- AI 建议的侧端代理：当前为浏览器直连用户配置的 AI 服务；如目标服务不支持 CORS，使用「复制 Prompt」降级路径。
 
 ## 设计文档
 

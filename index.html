@@ -9,9 +9,9 @@
     <script>
       ;(function () {
         try {
-          var saved = localStorage.getItem('link-analysis.theme')
-          var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
-          if (dark) document.documentElement.dataset.theme = 'dark'
+          if (localStorage.getItem('link-analysis.theme') === 'light') {
+            document.documentElement.dataset.theme = 'light'
+          }
         } catch (e) {}
       })()
     </script>

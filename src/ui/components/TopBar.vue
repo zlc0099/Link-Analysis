@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref } from 'vue'
 
-defineProps<{ hasToken: boolean; dark: boolean }>()
+defineProps<{
+  page: string
+  hasToken: boolean
+  dark: boolean
+}>()
+
 defineEmits<{ (e: 'toggle-token'): void; (e: 'toggle-theme'): void }>()
 
 const helpOpen = ref(false)
@@ -40,21 +45,33 @@ onBeforeUnmount(stopHelpListeners)
 
 <template>
   <header class="topbar">
-    <div class="container topbar-inner">
-      <a class="brand" href="./">
-        <strong>Link-Analysis</strong>
-        <span class="brand-sub">Git 仓库接入体检</span>
-      </a>
+    <div class="topbar-inner">
+      <h1>{{ page }}</h1>
       <div class="actions">
-        <span class="state" :class="{ on: hasToken }">
-          <i aria-hidden="true"></i>{{ hasToken ? 'Token 已配置' : '匿名访问' }}
-        </span>
-        <button class="btn btn-ghost token-btn" type="button" @click="$emit('toggle-token')">
-          GitHub Token
+        <a
+          class="icon-btn"
+          href="https://github.com/zlc0099/Link-Analysis"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub 来源"
+          title="GitHub 来源"
+        >
+          <svg viewBox="0 0 16 16" width="17" height="17" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+          </svg>
+        </a>
+        <button
+          class="btn btn-ghost token-btn"
+          :class="{ on: hasToken }"
+          type="button"
+          :title="hasToken ? 'Token 已配置' : '配置 GitHub Token'"
+          @click="$emit('toggle-token')"
+        >
+          <i aria-hidden="true"></i>GitHub Token
         </button>
         <div ref="helpWrap" class="help-wrap">
           <button
-            class="btn btn-ghost theme-btn help-btn"
+            class="icon-btn"
             type="button"
             :class="{ open: helpOpen }"
             aria-haspopup="true"
@@ -63,7 +80,9 @@ onBeforeUnmount(stopHelpListeners)
             title="帮助"
             @click="toggleHelp"
           >
-            ?
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18Zm-2.4-11a2.4 2.4 0 1 1 3.3 2.22c-.55.23-.9.7-.9 1.28v.4m0 3.1v.2" />
+            </svg>
           </button>
           <div v-if="helpOpen" class="flyout" role="note" aria-label="使用帮助">
             <h3>使用帮助</h3>
@@ -83,11 +102,7 @@ onBeforeUnmount(stopHelpListeners)
               <span class="item-label">配置 Token</span>
               <p>
                 建议使用 fine-grained token，仅授予公开仓库只读权限。
-                <a
-                  href="https://github.com/settings/personal-access-tokens/new"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >前往 GitHub 创建 Token ↗</a>
+                <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">前往 GitHub 创建 Token ↗</a>
               </p>
             </div>
             <div class="item">
@@ -97,31 +112,27 @@ onBeforeUnmount(stopHelpListeners)
           </div>
         </div>
         <button
-          class="btn btn-ghost theme-btn"
+          class="icon-btn"
           type="button"
           :aria-label="dark ? '切换到浅色模式' : '切换到深色模式'"
           :title="dark ? '切换到浅色模式' : '切换到深色模式'"
           @click="$emit('toggle-theme')"
         >
-          <svg v-if="dark" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
-            <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2" />
-            <path
-              d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2.1 2.1M16.9 16.9L19 19M19 5l-2.1 2.1M7.1 16.9L5 19"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
+          <svg v-if="dark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.5" />
+            <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2.1 2.1M16.9 16.9L19 19M19 5l-2.1 2.1M7.1 16.9L5 19" />
           </svg>
-          <svg v-else viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
-            <path
-              d="M20 13.2A8.2 8.2 0 0 1 10.8 4 7 7 0 1 0 20 13.2Z"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linejoin="round"
-            />
+          <svg v-else viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 13.2A8.2 8.2 0 0 1 10.8 4 7 7 0 1 0 20 13.2Z" />
           </svg>
         </button>
+        <span class="divider" aria-hidden="true"></span>
+        <span class="avatar" aria-label="用户头像占位">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="8.5" r="3.5" />
+            <path d="M5 20c1.4-3.2 4-4.8 7-4.8s5.6 1.6 7 4.8" />
+          </svg>
+        </span>
       </div>
     </div>
   </header>
@@ -132,72 +143,76 @@ onBeforeUnmount(stopHelpListeners)
   position: sticky;
   top: 0;
   z-index: 20;
-  background: var(--topbar-bg);
-  -webkit-backdrop-filter: blur(var(--blur));
-  backdrop-filter: blur(var(--blur));
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
 
 .topbar-inner {
-  height: 56px;
+  height: 72px;
+  padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  max-width: 1216px;
+  margin: 0 auto;
 }
 
-.brand {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
-  color: var(--ink);
-  font-size: 14px;
-}
-
-.brand:hover {
-  text-decoration: none;
-}
-
-.brand strong {
+h1 {
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
-}
-
-.brand-sub {
-  font-size: 12px;
-  color: var(--muted);
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
 }
 
-.state {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-right: 6px;
-  font-size: 12px;
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  transition: color var(--duration-fast) ease, border-color var(--duration-fast) ease;
+}
+
+.icon-btn:hover,
+.icon-btn.open {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.icon-btn.open {
+  color: var(--accent);
+}
+
+.token-btn {
+  height: 34px;
+  padding: 0 12px;
   color: var(--muted);
 }
 
-.state i {
+.token-btn i {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: var(--line-strong);
-  display: inline-block;
 }
 
-.state.on i {
+.token-btn.on {
+  color: var(--ink);
+}
+
+.token-btn.on i {
   background: var(--ok);
-}
-
-.theme-btn {
-  min-height: 32px;
-  min-width: 32px;
-  padding: 0 6px;
 }
 
 .help-wrap {
@@ -205,29 +220,22 @@ onBeforeUnmount(stopHelpListeners)
   display: inline-flex;
 }
 
-.help-btn {
-  font-weight: 600;
-}
-
-.help-btn.open {
-  color: var(--accent);
-}
-
-/* Fluent 浮层：85% 填充 + 30px 模糊 + 双层阴影 */
 .flyout {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 10px);
   right: 0;
   z-index: 30;
   width: min(320px, calc(100vw - 48px));
   padding: 16px;
-  background: var(--flyout-bg);
-  -webkit-backdrop-filter: blur(30px);
-  backdrop-filter: blur(30px);
-  border: 1px solid var(--flyout-border);
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-flyout);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   text-align: left;
+}
+
+:root[data-theme='light'] .flyout {
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
 }
 
 .flyout h3 {
@@ -244,20 +252,37 @@ onBeforeUnmount(stopHelpListeners)
   display: block;
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--accent);
+  color: var(--cyan);
 }
 
 .item p {
   margin: 2px 0 0;
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 14px;
   color: var(--ink-soft);
 }
 
-@media (max-width: 560px) {
-  .brand-sub,
-  .state {
+.divider {
+  width: 1px;
+  height: 22px;
+  background: var(--line);
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .topbar-inner {
+    padding: 0 20px;
+  }
+  .token-btn {
     display: none;
   }
 }

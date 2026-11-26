@@ -1,5 +1,6 @@
 import type { Report } from './schema'
 import type { Finding, Severity } from '../rules/types'
+import type { AiAdvice } from '../ai/types'
 
 const SEVERITY_ORDER: Record<Severity, number> = { P0: 0, P1: 1, P2: 2, P3: 3, INFO: 4 }
 
@@ -32,7 +33,7 @@ function findingBlock(f: Finding): string {
   return lines.join('\n')
 }
 
-export function buildMarkdown(report: Report): string {
+export function buildMarkdown(report: Report, advice?: AiAdvice | null): string {
   const { repo, commit, coverage, score } = report
   const findings = sortFindings(report.findings)
   const major = findings.filter((f) => f.severity === 'P0' || f.severity === 'P1')
@@ -96,6 +97,29 @@ export function buildMarkdown(report: Report): string {
     }
   }
   lines.push('')
+
+  if (advice) {
+    lines.push('## AI 接入建议（AI 生成，仅供参考，评分以规则引擎为准）', '')
+    if (advice.overall) lines.push(advice.overall, '')
+    if (advice.fixPlan.length) {
+      lines.push('### 修复优先级', '')
+      for (const item of advice.fixPlan) {
+        lines.push(`${item.priority}. **${item.title}**`)
+        for (const s of item.steps) lines.push(`   - ${s}`)
+        lines.push('')
+      }
+    }
+    if (advice.objections.length) {
+      lines.push('### 对规则的异议', '')
+      for (const o of advice.objections) lines.push(`- ${o.ruleId}：${o.reason}`)
+      lines.push('')
+    }
+    if (advice.checklist.length) {
+      lines.push('### 接入前检查清单', '')
+      for (const c of advice.checklist) lines.push(`- [ ] ${c}`)
+      lines.push('')
+    }
+  }
 
   if (report.limitations.length) {
     lines.push('## 已知限制', '')

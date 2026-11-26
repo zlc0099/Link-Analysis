@@ -105,7 +105,7 @@ input {
   border-radius: var(--radius-sm);
   background: var(--surface-soft);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 input:focus {
