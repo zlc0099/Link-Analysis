@@ -111,8 +111,8 @@ Tests       138 passed (138)
 
 ```text
 dist/index.html                 0.60 kB │ gzip: 0.41 kB
-dist/assets/index-*.css        16.1 kB  │ gzip: 3.74 kB
-dist/assets/index-*.js        119.7 kB  │ gzip: 46.3 kB
+dist/assets/index-*.css        16.27 kB │ gzip: 3.77 kB
+dist/assets/index-*.js        120.75 kB │ gzip: 46.72 kB
 ```
 
 ### 5.4 页面实测
